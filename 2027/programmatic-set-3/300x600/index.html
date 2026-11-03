@@ -2091,25 +2091,35 @@ gsap.set('#photoB2',{svgOrigin:C(G.photoB2)}); gsap.set('#vest',{svgOrigin:C(G.v
 
 gsap.set(['#logo','#ctaA','#curl1','#curl2'],{opacity:0});
 const LB='#logoB', LG=G.logo;
-// ---- beat 1
+// ---- message 1 (builds by ~2.4s)
 tl.to(['#date','#nssf','#rule'],{opacity:1,duration:.5},0)
-  .to('#photoB1',{opacity:1,duration:.5},.15)
-  .from(LB,{opacity:0,scale:.6,svgOrigin:`${LG.ox+LG.x} ${LG.oy+LG.y}`,duration:.6,ease:'back.out(1.6)'},.4)
-  .to('#shadowB',{opacity:1,duration:.3},.9);
-inLeft('b1',1.2); inLeft('b2',1.6); inLeft('b3',2.0);
-tl.to('#photoB2',{opacity:1,duration:.5},2.4)
-  .to('#arrowB',{opacity:1,duration:.4},2.7)
-  .to('#ctaB',{opacity:1,duration:.4},2.9);
-// ---- crossfade
-const T = 5.4, F = .6;
+  .to('#photoB1',{opacity:1,duration:.5},.1)
+  .from(LB,{opacity:0,scale:.6,svgOrigin:`${LG.ox+LG.x} ${LG.oy+LG.y}`,duration:.6,ease:'back.out(1.6)'},.3)
+  .to('#shadowB',{opacity:1,duration:.3},.7);
+inLeft('b1',.7); inLeft('b2',1.0); inLeft('b3',1.3);
+tl.to('#photoB2',{opacity:1,duration:.5},1.6)
+  .to('#arrowB',{opacity:1,duration:.4},1.9)
+  .to('#ctaB',{opacity:1,duration:.4},2.0);
+// ---- hold ~2.6s, then crossfade to message 2
+const T = 5.0, F = .6;
 tl.to(['#headB','#photoB1','#photoB2',LB,'#shadowB','#ctaB','#arrowB'],{opacity:0,duration:F,ease:'power1.inOut'},T)
   .to(['#logo','#shadowA','#ctaA','#photoA'],{opacity:1,duration:F,ease:'power1.inOut'},T);
-inLeft('a1',T+.35); inRight('a2',T+.6); inLeft('a3',T+.85); inRight('a4',T+1.1);
-tl.to(['#curl1','#curl2'],{opacity:1,duration:.4},T+1.2)
-  .to('#vest',{opacity:1,duration:.4},T+1.4)
-  .to('#shine',{attr:{x:G.ctaA[2]+20},duration:.8,ease:'power1.inOut'},T+2.2);
+inLeft('a1',T+.3); inRight('a2',T+.5); inLeft('a3',T+.7); inRight('a4',T+.9);
+tl.to(['#curl1','#curl2'],{opacity:1,duration:.4},T+1.0)
+  .to('#vest',{opacity:1,duration:.4},T+1.2)
+  .to('#shine',{attr:{x:G.ctaA[2]+20},duration:.8,ease:'power1.inOut'},T+1.8);
 
-if(!window.__capture){ window.addEventListener('load',function(){ tl.play(0); }); }
+// ---- loop: 3 passes; message 2 holds ~3s before each restart; stops on the end frame
+const art=document.getElementById('art'), fg=document.createElementNS('http://www.w3.org/2000/svg','g');
+fg.id='fg'; Array.from(art.children).forEach(c=>{ if(c.tagName!=='defs' && c.id!=='bg') fg.appendChild(c); }); art.appendChild(fg);
+const D=tl.duration(), master=gsap.timeline({paused:true});
+for(let i=0;i<3;i++){
+  master.set('#fg',{opacity:1}).add(tl.tweenFromTo(0,D,{ease:'none'}));
+  if(i<2) master.to('#fg',{opacity:0,duration:.35,ease:'power1.in'},'+=2.0');
+}
+window.master=master; window.tl=master;
+
+if(!window.__capture){ window.addEventListener('load',function(){ (window.master||tl).play(0); }); }
 })();
 </script>
 </body>
